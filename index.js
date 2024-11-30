@@ -28,13 +28,29 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    // clint site data receiveding functionality start here now-------------------
+    
+    const coffeCollection = client.db("coffeDB").collection("coffee"); // coffeDB name ekta data base create kora hoyse and coffee er mordhe all data thakbe mongodb te
+    
+    app.get("/coffe", async(req, res)=>{
+      const result = await coffeCollection.find().toArray(); // ai 1 line a mongodb te data fetch kora holo
+      res.send(result)
+    })
+
+    app.post('/coffe', async(req, res)=>{
+      const newCoffe = req.body;
+      console.log("new coffe hiting", newCoffe);
+      const result = await coffeCollection.insertOne(newCoffe); /// ai 1 line a mongodb te data pathano holo
+      res.send(result)
+    })
     
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // client.close();
   }
 }
 run().catch(console.dir);
