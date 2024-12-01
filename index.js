@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 // Middleware configuration Useing.......
@@ -43,6 +43,47 @@ async function run() {
       console.log("new coffe hiting", newCoffe);
       const result = await coffeCollection.insertOne(newCoffe); /// ai 1 line a mongodb te data pathano holo
       res.send(result)
+    })
+
+    // Updated Coffee card functionality start here now---------------
+   
+    app.put('/coffe/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const options = { upsert: true};
+      const updatedDoc = req.body;
+      const updated = {
+        $set: {
+          name: updatedDoc.name,
+          Chef: updatedDoc.Chef,
+          Supplier: updatedDoc.Supplier,
+          Taste: updatedDoc.Taste,
+          Category: updatedDoc.Category,
+          Details: updatedDoc.Details,
+          Photo: updatedDoc.Photo,
+        }
+      }
+      const result = await coffeCollection.updateOne(filter, updated, options)
+      res.send(result)
+    })
+
+
+    /// single product details functionality start here 
+
+    app.get('/coffe/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await coffeCollection.findOne(query);
+      res.send(result);
+    })
+
+    /// product deleted functionality start here now---------------------
+
+    app.delete('/coffe/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await coffeCollection.deleteOne(query);
+      res.send(result);
     })
     
     // Send a ping to confirm a successful connection
